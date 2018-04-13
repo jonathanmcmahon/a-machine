@@ -1,46 +1,37 @@
-""" A Turing machine example ("Busy Beaver").
+"""A Turing machine example ("Busy Beaver").
 
 https://en.wikipedia.org/wiki/Turing_machine
-
 """
 from collections import deque
 
 
 class Machine:
+    """A one-tape Turing machine."""
 
-    states = ["A", "B", "C", "HALT"]
+    def __init__(self,
+                 states,
+                 initial_state,
+                 final_state,
+                 alphabet,
+                 blank,
+                 instruction_table):
+        """Create a new machine."""
+        self.states = states
+        self.initial_state = initial_state
+        self.final_state = final_state
 
-    final_state = "HALT"
+        self.alphabet = alphabet
+        self.blank = blank
 
-    alphabet = ["0", "1"]
+        self.instruction_table = instruction_table
 
-    blank = "0"
-
-    instruction_table = {
-        "A":
-            {
-                "0": ("1", "R", "B"),
-                "1": ("1", "L", "C")
-            },
-        "B":
-            {
-                "0": ("1", "L", "A"),
-                "1": ("1", "R", "B")
-            },
-        "C":
-            {
-                "0": ("1", "L", "B"),
-                "1": ("1", "R", "HALT")
-            }
-    }
-
-
-    def __init__(self, initial_state="A"):
+        # Initialize machine
         self.tape = deque(self.blank)
         self.current_state = initial_state
         self.head_position = 0
 
     def read_symbol(self):
+        """Read tape at currently location and return symbol."""
         # Simulate an infinite tape by growing the list as necessary
         if self.head_position < 0:
             self.tape.appendleft(self.blank)
@@ -51,6 +42,7 @@ class Machine:
         return self.tape[self.head_position]
 
     def write_symbol(self, sym):
+        """Write a specific symbol to the current tape location."""
         try:
             self.tape[self.head_position] = sym
         except IndexError:
@@ -60,13 +52,14 @@ class Machine:
             raise
 
     def move_tape(self, direction):
+        """Move tape one step in given direction (L or R)."""
         if direction == "L":
             self.head_position -= 1
         if direction == "R":
             self.head_position += 1
 
     def run(self):
-
+        """Start the Turing machine."""
         print(list(self.tape))
 
         while self.current_state is not self.final_state:
@@ -97,10 +90,44 @@ class Machine:
         print("HALT!")
 
 
-if __name__ == "__main__":
+def main():
+    """Create and run a Busy Beaver Turing machine."""
+    # Define the "Busy Beaver"
+    # https://en.wikipedia.org/wiki/Busy_beaver
+
+    states = ["A", "B", "C", "HALT"]
+
+    initial_state = "A"
+
+    final_state = "HALT"
+
+    alphabet = ["0", "1"]
+
+    blank = "0"
+
+    instruction_table = {
+        "A":
+            {
+                "0": ("1", "R", "B"),
+                "1": ("1", "L", "C")
+            },
+        "B":
+            {
+                "0": ("1", "L", "A"),
+                "1": ("1", "R", "B")
+            },
+        "C":
+            {
+                "0": ("1", "L", "B"),
+                "1": ("1", "R", "HALT")
+            }
+    }
 
     # Test the machine!
-
-    m = Machine()
+    m = Machine(states, initial_state, final_state, alphabet, blank, instruction_table)
 
     m.run()
+
+
+if __name__ == "__main__":
+    main()
